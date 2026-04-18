@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BusTrack — College Bus Tracking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06090f;
+      --surface: #0d1420;
+      --border: #1a2540;
+      --accent: #00e5ff;
+      --accent2: #ff6b35;
+      --text: #e2e8f0;
+      --muted: #4a5568;
+      --green: #00ff88;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Glow orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      opacity: 0.15;
+    }
+    .orb1 { width: 500px; height: 500px; background: var(--accent); top: -200px; right: -100px; }
+    .orb2 { width: 400px; height: 400px; background: var(--accent2); bottom: -150px; left: -100px; }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px;
+      padding: 20px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .brand-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 12px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .brand h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand p {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .role-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+    .role-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.25s;
+      border-radius: 20px;
+    }
+    .role-card.driver::before { background: radial-gradient(circle at 50% 0%, rgba(0,229,255,0.1), transparent 70%); }
+    .role-card.commuter::before { background: radial-gradient(circle at 50% 0%, rgba(255,107,53,0.1), transparent 70%); }
+
+    .role-card:hover { transform: translateY(-4px); }
+    .role-card:hover::before { opacity: 1; }
+    .role-card.driver:hover { border-color: var(--accent); box-shadow: 0 0 30px rgba(0,229,255,0.15); }
+    .role-card.commuter:hover { border-color: var(--accent2); box-shadow: 0 0 30px rgba(255,107,53,0.15); }
+
+    .role-icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+    .role-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .role-card.driver .role-title { color: var(--accent); }
+    .role-card.commuter .role-title { color: var(--accent2); }
+    .role-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.5; font-family: 'Space Mono', monospace; }
+
+    .pulse-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-right: 6px;
+      animation: pulseDot 1.5s infinite;
+      vertical-align: middle;
+    }
+    @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
+
+    .connect-link {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px 20px;
+      text-decoration: none; color: var(--muted);
+      transition: 0.2s; margin-bottom: 20px;
+    }
+    .connect-link:hover { border-color: var(--accent); color: var(--accent); }
+    .connect-link span { font-size: 1.4rem; flex-shrink: 0; }
+    .cl-title { font-size: 0.9rem; font-weight: 700; }
+    .cl-sub { font-family: 'Space Mono', monospace; font-size: 0.62rem; margin-top: 2px; }
+
+    .footer-note {
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+    .footer-note span { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+
+  <div class="container">
+    <div class="brand">
+      <span class="brand-icon">🚌</span>
+      <h1>BusTrack</h1>
+      <p><span class="pulse-dot"></span>Live College Bus Tracking</p>
+    </div>
+
+    <div class="role-grid">
+      <a href="driver.html" class="role-card driver">
+        <span class="role-icon">🧑‍✈️</span>
+        <div class="role-title">I'm a Driver</div>
+        <div class="role-desc">Login or register to share your live GPS location</div>
+      </a>
+      <a href="commuter.html" class="role-card commuter">
+        <span class="role-icon">🎓</span>
+        <div class="role-title">I'm a Commuter</div>
+        <div class="role-desc">Enter route ID & password to track your bus live</div>
+      </a>
+    </div>
+
+    <a href="connect.html" class="connect-link">
+      <span>🌐</span>
+      <div>
+        <div class="cl-title">Connect &amp; Share</div>
+        <div class="cl-sub">Get public URL · QR code · Setup for different networks</div>
+      </div>
+    </a>
+
+    <div class="footer-note">
+      Drivers: use your <span>personal login</span> · Commuters: use the <span>route password</span>
+    </div>
+  </div>
+</body>
+</html>
